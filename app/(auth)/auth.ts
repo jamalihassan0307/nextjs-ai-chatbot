@@ -1,10 +1,15 @@
-import { compare } from 'bcrypt-ts';
-import NextAuth, { type User, type Session } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import { auth as firebaseAuth } from "@/lib/firebase/init";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
+import NextAuth, { type User, type Session } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-import { getUser } from '@/lib/db/queries';
-
-import { authConfig } from './auth.config';
+import { firebaseConfig } from "@/lib/firebase/config";
+import { authConfig } from "./auth.config";
 
 interface ExtendedSession extends Session {
   user: User;
@@ -18,18 +23,34 @@ export const {
 } = NextAuth({
   ...authConfig,
   providers: [
-    Credentials({
-      credentials: {},
-      async authorize({ email, password }: any) {
-        const users = await getUser(email);
-        if (users.length === 0) return null;
-        // biome-ignore lint: Forbidden non-null assertion.
-        const passwordsMatch = await compare(password, users[0].password!);
-        if (!passwordsMatch) return null;
-        return users[0] as any;
+    CredentialsProvider({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            firebaseAuth,
+            credentials.email,
+            credentials.password
+          );
+
+          return {
+            id: userCredential.user.uid,
+            email: userCredential.user.email,
+            name: userCredential.user.displayName,
+          };
+        } catch (error) {
+          console.error("Authentication error:", error);
+          return null;
+        }
       },
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -53,3 +74,18 @@ export const {
     },
   },
 });
+
+// Helper function for registration
+export async function registerUser(email: string, password: string) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      firebaseAuth,
+      email,
+      password
+    );
+    return userCredential.user;
+  } catch (error) {
+    console.error("Registration error:", error);
+    throw error;
+  }
+}

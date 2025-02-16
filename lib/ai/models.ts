@@ -1,4 +1,7 @@
-// Define your models here.
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+export const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+export const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 export interface Model {
   id: string;
@@ -9,17 +12,11 @@ export interface Model {
 
 export const models: Array<Model> = [
   {
-    id: 'gpt-4o-mini',
-    label: 'GPT 4o mini',
-    apiIdentifier: 'gpt-4o-mini',
-    description: 'Small model for fast, lightweight tasks',
+    id: "gemini-pro",
+    label: "Gemini Pro",
+    apiIdentifier: "gemini-pro",
+    description: "Google's most capable model for text generation",
   },
-  {
-    id: 'gpt-4o',
-    label: 'GPT 4o',
-    apiIdentifier: 'gpt-4o',
-    description: 'For complex, multi-step tasks',
-  },
-] as const;
+];
 
-export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
+export const DEFAULT_MODEL_NAME = "gemini-pro";
