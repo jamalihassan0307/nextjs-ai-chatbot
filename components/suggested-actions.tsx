@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { memo } from "react";
+import { toast } from "sonner";
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -37,6 +38,34 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
   ];
 
+  const onClick = async (action: string) => {
+    try {
+      console.log("[Client] Sending message:", action);
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: action }),
+      });
+
+      const data = await response.json();
+      console.log("[Client] Received response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      window.history.replaceState({}, "", `/chat/${chatId}`);
+      append({
+        role: "user",
+        content: action,
+      });
+    } catch (error) {
+      console.error("[Client] Error:", error);
+      toast.error("Failed to send message");
+    }
+  };
+
   return (
     <div className="grid sm:grid-cols-2 gap-2 w-full">
       {suggestedActions.map((suggestedAction, index) => (
@@ -50,14 +79,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         >
           <Button
             variant="ghost"
-            onClick={async () => {
-              window.history.replaceState({}, "", `/chat/${chatId}`);
-
-              append({
-                role: "user",
-                content: suggestedAction.action,
-              });
-            }}
+            onClick={() => onClick(suggestedAction.action)}
             className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
           >
             <span className="font-medium">{suggestedAction.title}</span>

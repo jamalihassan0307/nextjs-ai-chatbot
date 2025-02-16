@@ -1,50 +1,37 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { GeminiService } from "@/lib/services/gemini.service";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const gemini = new GeminiService(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { message, userId, chatId } = await req.json();
+    // Read the request body only once
+    const body = await req.clone().json();
+    console.log("[API] Request:", body);
 
-    if (!userId || !chatId) {
-      return NextResponse.json(
-        { error: "Missing userId or chatId" },
-        { status: 400 }
-      );
+    if (!body.message) {
+      return new NextResponse(JSON.stringify({ error: "Missing message" }), {
+        status: 400,
+      });
     }
 
-    // Store user message
-    await addDoc(collection(db, "chats"), {
-      userId,
-      chatId,
-      role: "user",
-      content: message,
-      timestamp: serverTimestamp(),
-    });
-
     // Get AI response
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const result = await model.generateContent(message);
-    const response = await result.response;
-    const text = response.text();
+    const aiResponse = await gemini.generateResponse(body.message);
+    console.log("[API] AI Response:", aiResponse);
 
-    // Store AI response
-    await addDoc(collection(db, "chats"), {
-      userId,
-      chatId,
+    // Structure the response
+    const responseData = {
       role: "assistant",
-      content: text,
-      timestamp: serverTimestamp(),
-    });
+      content: aiResponse,
+      timestamp: Date.now(),
+    };
 
-    return NextResponse.json({ response: text });
+    console.log("[API] Final Response:", responseData);
+    return new NextResponse(JSON.stringify(responseData));
   } catch (error: any) {
-    console.error("Chat API error:", error);
-    return NextResponse.json(
-      { error: error.message || "Internal server error" },
+    console.error("[API] Error:", error);
+    return new NextResponse(
+      JSON.stringify({ error: error.message || "Internal server error" }),
       { status: 500 }
     );
   }
