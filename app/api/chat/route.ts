@@ -1,25 +1,46 @@
 import { NextResponse } from "next/server";
-import { GeminiService } from "@/lib/services/gemini.service";
-import { auth } from "@/lib/firebase";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-const geminiService = new GeminiService();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { message, chatId } = await req.json();
-    const user = auth.currentUser;
+    const { message, userId, chatId } = await req.json();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId || !chatId) {
+      return NextResponse.json(
+        { error: "Missing userId or chatId" },
+        { status: 400 }
+      );
     }
 
-    const response = await geminiService.generateResponse(
-      message,
-      user.uid,
-      chatId
-    );
+    // Store user message
+    await addDoc(collection(db, "chats"), {
+      userId,
+      chatId,
+      role: "user",
+      content: message,
+      timestamp: serverTimestamp(),
+    });
 
-    return NextResponse.json({ response });
+    // Get AI response
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContent(message);
+    const response = await result.response;
+    const text = response.text();
+
+    // Store AI response
+    await addDoc(collection(db, "chats"), {
+      userId,
+      chatId,
+      role: "assistant",
+      content: text,
+      timestamp: serverTimestamp(),
+    });
+
+    return NextResponse.json({ response: text });
   } catch (error: any) {
     console.error("Chat API error:", error);
     return NextResponse.json(

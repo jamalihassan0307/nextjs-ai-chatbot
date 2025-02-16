@@ -1,12 +1,17 @@
-import Form from 'next/form';
+"use client";
+import * as React from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+type HTMLFormProps = React.DetailedHTMLProps<
+  React.FormHTMLAttributes<HTMLFormElement>,
+  HTMLFormElement
+>;
 
 export function AuthForm({
   action,
   children,
-  defaultEmail = '',
+  defaultEmail = "",
 }: {
   action: NonNullable<
     string | ((formData: FormData) => void | Promise<void>) | undefined
@@ -15,7 +20,7 @@ export function AuthForm({
   defaultEmail?: string;
 }) {
   return (
-    <Form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
+    <form action={action} className="flex flex-col gap-4 px-4 sm:px-16">
       <div className="flex flex-col gap-2">
         <Label
           htmlFor="email"
@@ -55,6 +60,6 @@ export function AuthForm({
       </div>
 
       {children}
-    </Form>
+    </form>
   );
 }
