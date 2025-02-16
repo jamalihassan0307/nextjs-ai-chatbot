@@ -34,9 +34,8 @@ export function DocumentToolResult({
   result,
   isReadonly,
 }: DocumentToolResultProps) {
-  if (!result) return null;
-
   const { setBlock } = useBlock();
+  if (!result) return null;
 
   return (
     <button
