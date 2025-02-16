@@ -28,6 +28,7 @@ import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { model } from "@/lib/ai/models";
 import { store } from "@/lib/store";
+import { deleteChat } from "@/lib/firebase/firestore";
 
 export const maxDuration = 60;
 
@@ -56,17 +57,39 @@ export async function POST(request: Request) {
     const { messages } = await request.json();
     const chatId = generateUUID();
 
-    // Store the chat
-    store.chats.set(chatId, {
+    // Generate response using Gemini
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: messages[messages.length - 1].content }],
+        },
+      ],
+    });
+    const response = result.response;
+
+    // Add AI response to messages
+    const updatedMessages = [
+      ...messages,
+      {
+        id: generateUUID(),
+        role: "assistant",
+        content: response.text(),
+        createdAt: new Date(),
+      },
+    ];
+
+    // Save to Firebase
+    await saveChat({
       id: chatId,
       userId: session.user.id,
-      messages,
+      messages: updatedMessages,
       createdAt: new Date(),
     });
 
     return Response.json({
       id: chatId,
-      messages,
+      messages: updatedMessages,
     });
   } catch (error) {
     console.error("Chat API error:", error);
@@ -83,24 +106,18 @@ export async function DELETE(request: Request) {
   }
 
   const session = await auth();
-
-  if (!session || !session.user) {
+  if (!session?.user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
   try {
-    const chat = await getChatById({ id });
-
-    if (chat.userId !== session.user.id) {
-      return new Response("Unauthorized", { status: 401 });
+    const success = await deleteChat(id);
+    if (success) {
+      return new Response("Chat deleted", { status: 200 });
+    } else {
+      return new Response("Failed to delete chat", { status: 500 });
     }
-
-    await deleteChatById({ id });
-
-    return new Response("Chat deleted", { status: 200 });
   } catch (error) {
-    return new Response("An error occurred while processing your request", {
-      status: 500,
-    });
+    return new Response("An error occurred", { status: 500 });
   }
 }
