@@ -13,9 +13,9 @@ import { db } from "./init";
 export interface ChatData {
   id: string;
   userId: string;
+  title: string;
   messages: any[];
   createdAt: Date;
-  title?: string;
 }
 
 export const saveChat = async (chatData: ChatData) => {
@@ -23,7 +23,7 @@ export const saveChat = async (chatData: ChatData) => {
     const chatsRef = collection(db, "chats");
     await addDoc(chatsRef, {
       ...chatData,
-      createdAt: Timestamp.fromDate(new Date()),
+      createdAt: Timestamp.fromDate(chatData.createdAt),
     });
     return true;
   } catch (error) {

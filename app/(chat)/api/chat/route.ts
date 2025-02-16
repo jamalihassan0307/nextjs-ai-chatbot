@@ -77,8 +77,9 @@ export async function POST(request: Request) {
     await saveChat({
       id: chatId,
       userId: session.user.id,
-      messages: updatedMessages,
+      title: "New Chat",
       createdAt: new Date(),
+      messages: updatedMessages,
     });
 
     return Response.json({
