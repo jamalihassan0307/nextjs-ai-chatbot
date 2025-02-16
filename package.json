@@ -78,6 +78,7 @@
     "@biomejs/biome": "1.9.4",
     "drizzle-kit": "^0.20.14",
     "@tailwindcss/typography": "^0.5.15",
+    "@types/pg": "^8.11.2",
     "@types/d3-scale": "^4.0.8",
     "@types/node": "^22.8.6",
     "@types/papaparse": "^5.3.15",

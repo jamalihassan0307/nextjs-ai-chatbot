@@ -44,40 +44,26 @@ export const login = async (
 export interface RegisterActionState {
   status:
     | "idle"
-    | "in_progress"
     | "success"
-    | "failed"
     | "user_exists"
-    | "invalid_data";
+    | "invalid_data"
+    | "failed"
+    | "in_progress";
 }
 
-export async function register(
-  prevState: RegisterActionState,
+export const register = async (
+  _: RegisterActionState,
   formData: FormData
-) {
+): Promise<RegisterActionState> => {
   try {
     const validatedData = authFormSchema.parse({
       email: formData.get("email"),
       password: formData.get("password"),
     });
 
-    console.log("Starting registration process...");
-
     try {
       await registerUser(validatedData.email, validatedData.password);
-    } catch (regError) {
-      console.error("Firebase registration error:", regError);
-      throw regError;
-    }
-
-    console.log("Registration successful, attempting sign in...");
-
-    try {
-      await signIn("credentials", {
-        email: validatedData.email,
-        password: validatedData.password,
-        redirect: false,
-      });
+      await signIn("credentials", validatedData);
     } catch (signInError) {
       console.error("Sign in error:", signInError);
       throw signInError;
@@ -99,4 +85,4 @@ export async function register(
     }
     return { status: "failed" };
   }
-}
+};

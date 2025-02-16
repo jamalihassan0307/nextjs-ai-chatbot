@@ -1,13 +1,7 @@
-import {
-  type Message,
-  createDataStreamResponse,
-  smoothStream,
-  streamText,
-} from "ai";
+import { type Message, StreamingTextResponse } from "ai";
 
 import { auth } from "@/app/(auth)/auth";
 import { customModel } from "@/lib/ai";
-import { models } from "@/lib/ai/models";
 import { systemPrompt } from "@/lib/ai/prompts";
 import {
   deleteChatById,
@@ -50,7 +44,7 @@ const allTools: AllowedTools[] = [...blocksTools, ...weatherTools];
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return new Response("Unauthorized", { status: 401 });
     }
 

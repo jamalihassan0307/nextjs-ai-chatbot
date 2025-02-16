@@ -19,11 +19,6 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
-interface Credentials extends Record<"email" | "password", string> {
-  email: string;
-  password: string;
-}
-
 export const {
   handlers: { GET, POST },
   auth,
@@ -43,8 +38,8 @@ export const {
         try {
           const userCredential = await signInWithEmailAndPassword(
             firebaseAuth,
-            credentials.email,
-            credentials.password
+            credentials.email as string,
+            credentials.password as string
           );
 
           return {
