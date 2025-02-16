@@ -174,8 +174,11 @@ const PurePreviewMessage = ({
                         {toolName === "getWeather" ? (
                           <Weather
                             weatherAtLocation={
-                              "current_units" in (result || {})
-                                ? (result as WeatherAtLocation)
+                              "current_units" in (result || {}) &&
+                              "generationtime_ms" in (result || {}) &&
+                              "timezone" in (result || {}) &&
+                              "daily" in (result || {})
+                                ? (result as unknown as WeatherAtLocation)
                                 : undefined
                             }
                           />
