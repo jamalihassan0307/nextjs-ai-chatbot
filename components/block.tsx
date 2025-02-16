@@ -27,7 +27,12 @@ import { codeBlock } from "@/blocks/code";
 import equal from "fast-deep-equal";
 import { sheetBlock } from "@/blocks/sheet";
 
-export type FileWithPath = File & { path?: string };
+export type FileWithPath = File & {
+  path?: string;
+  url?: string;
+  name?: string;
+  contentType?: string;
+};
 
 export const blockDefinitions = [textBlock, codeBlock, imageBlock, sheetBlock];
 export type BlockKind = (typeof blockDefinitions)[number]["kind"];
