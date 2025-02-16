@@ -1,13 +1,4 @@
-import { openai } from "@ai-sdk/openai";
-import { createLanguageModel } from "ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { customMiddleware } from "./custom-middleware";
-
-export const customModel = (apiIdentifier: string) => {
-  return createLanguageModel({
-    model: openai(apiIdentifier),
-    middleware: customMiddleware,
-  });
-};
-
-export const imageGenerationModel = openai.image("dall-e-3");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+export const model = genAI.getGenerativeModel({ model: "gemini-pro" });
