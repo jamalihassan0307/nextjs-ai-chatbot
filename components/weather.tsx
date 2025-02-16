@@ -13,9 +13,16 @@ export interface WeatherAtLocation {
   timezone_abbreviation: string;
   elevation: number;
   current_units: Record<string, string>;
-  current: Record<string, number>;
+  current: {
+    time: string;
+    interval: number;
+    temperature_2m: number;
+  };
   hourly_units: Record<string, string>;
-  hourly: Record<string, number[]>;
+  hourly: {
+    time: string[];
+    temperature_2m: number[];
+  };
   daily_units: {
     time: string;
     sunrise: string;
