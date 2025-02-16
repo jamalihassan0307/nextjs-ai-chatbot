@@ -4,7 +4,7 @@ import { getUserChats } from "@/lib/firebase/firestore";
 export async function GET() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return Response.json("Unauthorized!", { status: 401 });
   }
 
