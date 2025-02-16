@@ -1,7 +1,6 @@
 import { type Message, StreamingTextResponse } from "ai";
 
 import { auth } from "@/app/(auth)/auth";
-import { customModel } from "@/lib/ai";
 import { systemPrompt } from "@/lib/ai/prompts";
 import {
   deleteChatById,
@@ -20,7 +19,7 @@ import { createDocument } from "@/lib/ai/tools/create-document";
 import { updateDocument } from "@/lib/ai/tools/update-document";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { getWeather } from "@/lib/ai/tools/get-weather";
-import { model, models } from "@/lib/ai/models";
+import { model } from "@/lib/ai/models";
 import { store } from "@/lib/store";
 import { deleteChat } from "@/lib/firebase/firestore";
 
@@ -41,51 +40,29 @@ const blocksTools: AllowedTools[] = [
 const weatherTools: AllowedTools[] = ["getWeather"];
 const allTools: AllowedTools[] = [...blocksTools, ...weatherTools];
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
+  const json = await req.json();
+  const { messages } = json;
+  const session = await auth();
+
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
-    const { messages } = await request.json();
-    const chatId = generateUUID();
-
-    // Generate response using Gemini
     const result = await model.generateContent({
       contents: [
         {
           role: "user",
-          parts: [{ text: messages[messages.length - 1].content }],
+          parts: [{ text: systemPrompt }],
         },
+        ...messages.map((msg: any) => ({
+          role: msg.role,
+          parts: [{ text: msg.content }],
+        })),
       ],
-    });
-    const response = result.response;
-
-    // Add AI response to messages
-    const updatedMessages = [
-      ...messages,
-      {
-        id: generateUUID(),
-        role: "assistant",
-        content: response.text(),
-        createdAt: new Date(),
+      generationConfig: {
+        maxOutputTokens: 2048,
       },
-    ];
-
-    // Save to Firebase
-    await saveChat({
-      id: chatId,
-      userId: session.user.id,
-      title: "New Chat",
-      createdAt: new Date(),
-      messages: updatedMessages,
     });
 
-    return Response.json({
-      id: chatId,
-      messages: updatedMessages,
-    });
+    return new Response(result.response.text());
   } catch (error) {
     console.error("Chat API error:", error);
     return new Response("Internal Server Error", { status: 500 });

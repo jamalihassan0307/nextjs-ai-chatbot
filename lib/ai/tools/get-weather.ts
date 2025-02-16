@@ -1,18 +1,28 @@
-import { tool } from 'ai';
-import { z } from 'zod';
+import { model } from "@/lib/ai";
 
-export const getWeather = tool({
-  description: 'Get the current weather at a location',
-  parameters: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-  }),
-  execute: async ({ latitude, longitude }) => {
+export async function getWeather({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) {
+  try {
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,interval&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
     );
 
+    if (!response.ok) {
+      throw new Error("Weather API request failed");
+    }
+
     const weatherData = await response.json();
-    return weatherData;
-  },
-});
+    return {
+      ...weatherData,
+      content: `Current temperature is ${weatherData.current.temperature_2m}°${weatherData.current_units.temperature_2m}`,
+    };
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+    throw error;
+  }
+}

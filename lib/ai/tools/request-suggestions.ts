@@ -1,92 +1,63 @@
-import { z } from 'zod';
-import { Model } from '../models';
-import { Session } from 'next-auth';
-import { DataStreamWriter, streamObject, tool } from 'ai';
-import { getDocumentById, saveSuggestions } from '@/lib/db/queries';
-import { Suggestion } from '@/lib/db/schema';
-import { customModel } from '..';
-import { generateUUID } from '@/lib/utils';
+import { Session } from "next-auth";
+import { getDocumentById, saveSuggestions } from "@/lib/db/queries";
+import { Suggestion } from "@/lib/db/schema";
+import { model } from "@/lib/ai";
+import { generateUUID } from "@/lib/utils";
 
-interface RequestSuggestionsProps {
-  model: Model;
-  session: Session;
-  dataStream: DataStreamWriter;
+export async function requestSuggestions(
+  {
+    documentId,
+    title,
+  }: {
+    documentId: string;
+    title: string;
+  },
+  session: Session
+) {
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized: User ID is required");
+  }
+
+  const userId = session.user.id;
+  const document = await getDocumentById({ id: documentId });
+
+  if (!document) {
+    throw new Error("Document not found");
+  }
+
+  try {
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `Provide suggestions for improving this document titled "${title}": ${document.content}`,
+            },
+          ],
+        },
+      ],
+    });
+
+    const suggestions = result.response.text().split("\n").filter(Boolean);
+
+    const savedSuggestions = await saveSuggestions({
+      suggestions: suggestions.map((s) => ({
+        id: generateUUID(),
+        documentId,
+        userId,
+        createdAt: new Date(),
+        documentCreatedAt: document.createdAt,
+        description: null,
+        originalText: document.content || "",
+        suggestedText: s,
+        isResolved: false as const,
+      })),
+    });
+
+    return savedSuggestions;
+  } catch (error) {
+    console.error("Error requesting suggestions:", error);
+    throw error;
+  }
 }
-
-export const requestSuggestions = ({
-  model,
-  session,
-  dataStream,
-}: RequestSuggestionsProps) =>
-  tool({
-    description: 'Request suggestions for a document',
-    parameters: z.object({
-      documentId: z
-        .string()
-        .describe('The ID of the document to request edits'),
-    }),
-    execute: async ({ documentId }) => {
-      const document = await getDocumentById({ id: documentId });
-
-      if (!document || !document.content) {
-        return {
-          error: 'Document not found',
-        };
-      }
-
-      const suggestions: Array<
-        Omit<Suggestion, 'userId' | 'createdAt' | 'documentCreatedAt'>
-      > = [];
-
-      const { elementStream } = streamObject({
-        model: customModel(model.apiIdentifier),
-        system:
-          'You are a help writing assistant. Given a piece of writing, please offer suggestions to improve the piece of writing and describe the change. It is very important for the edits to contain full sentences instead of just words. Max 5 suggestions.',
-        prompt: document.content,
-        output: 'array',
-        schema: z.object({
-          originalSentence: z.string().describe('The original sentence'),
-          suggestedSentence: z.string().describe('The suggested sentence'),
-          description: z.string().describe('The description of the suggestion'),
-        }),
-      });
-
-      for await (const element of elementStream) {
-        const suggestion = {
-          originalText: element.originalSentence,
-          suggestedText: element.suggestedSentence,
-          description: element.description,
-          id: generateUUID(),
-          documentId: documentId,
-          isResolved: false,
-        };
-
-        dataStream.writeData({
-          type: 'suggestion',
-          content: suggestion,
-        });
-
-        suggestions.push(suggestion);
-      }
-
-      if (session.user?.id) {
-        const userId = session.user.id;
-
-        await saveSuggestions({
-          suggestions: suggestions.map((suggestion) => ({
-            ...suggestion,
-            userId,
-            createdAt: new Date(),
-            documentCreatedAt: document.createdAt,
-          })),
-        });
-      }
-
-      return {
-        id: documentId,
-        title: document.title,
-        kind: document.kind,
-        message: 'Suggestions have been added to the document',
-      };
-    },
-  });
