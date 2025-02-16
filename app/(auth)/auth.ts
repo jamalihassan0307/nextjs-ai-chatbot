@@ -5,7 +5,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import NextAuth, { type User, type Session } from "next-auth";
+import NextAuth, {
+  type User,
+  type Session,
+  type DefaultSession,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { firebaseConfig } from "@/lib/firebase/config";
@@ -13,6 +17,11 @@ import { authConfig } from "./auth.config";
 
 interface ExtendedSession extends Session {
   user: User;
+}
+
+interface Credentials extends Record<"email" | "password", string> {
+  email: string;
+  password: string;
 }
 
 export const {
