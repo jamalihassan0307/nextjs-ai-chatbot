@@ -1,197 +1,133 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Next.js AI Chatbot</h1>
-</a>
+# <div align="center">
 
-<p align="center">
-  An Open-Source AI Chatbot Template Built With Next.js and the AI SDK by Vercel.
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
-
-## Features
-
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports OpenAI (default), Anthropic, Cohere, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Vercel Postgres powered by Neon](https://vercel.com/storage/postgres) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [NextAuth.js](https://github.com/nextauthjs/next-auth)
-  - Simple and secure authentication
-
-## Model Providers
-
-This template ships with OpenAI `gpt-4o` as the default. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
-
-## Running locally
-
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
-
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Your app template should now be running on [localhost:3000](http://localhost:3000/).
-
-<!-- <div align="center">
-  <img src="screenshots/sdkai.png" alt="AI SDK Image Generator" width="800"/>
-  <h1>AI SDK Image Generator</h1>
-  <h3>A Modern AI Image Generation Platform</h3>
+  <h1>🤖 Next.js AI Chatbot</h1>
+  <h3>A Modern AI-Powered Chat Application with Firebase Authentication</h3>
 </div>
 
 <p align="center">
-    <a href="https://ai-sdk-image-generator.vercel.app" target="_blank">
+    <a href="https://nextjs-ai-chatbot-scgh-git-main-jamalihassan0307s-projects.vercel.app/" target="_blank">
         <img alt="" src="https://img.shields.io/badge/Website-EA4C89?style=normal&logo=vercel&logoColor=white" style="vertical-align:center" />
     </a>
-    <a href="https://github.com/jamalihassan0307/ai-sdk-image-generator" target="_blank">
+    <a href="https://github.com/jamalihassan0307/nextjs-ai-chatbot" target="_blank">
         <img alt="" src="https://img.shields.io/badge/GitHub-100000?style=normal&logo=github&logoColor=white" style="vertical-align:center" />
+    </a>
+    <a href="https://www.linkedin.com/in/jamalihassan0307/" target="_blank">
+        <img alt="" src="https://img.shields.io/badge/LinkedIn-0077B5?style=normal&logo=linkedin&logoColor=white" style="vertical-align:center" />
     </a>
 </p>
 
 # 📌 Overview
 
-AI SDK Image Generator is a powerful web application that leverages multiple AI providers to generate images from text descriptions. Users can create unique images using different AI models and compare results across providers.
+Next.js AI Chatbot is a sophisticated web application that combines the power of Google's Gemini AI with Next.js and Firebase authentication. Users can engage in intelligent conversations, generate content, and manage their chat history in a secure environment.
 
 # 🛠️ Tech Stack
 
 ![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Vercel AI SDK](https://img.shields.io/badge/Vercel%20AI%20SDK-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)
+![Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ## 🔑 Key Features
 
-### AI Model Integration
+### Authentication System
 
-- Multiple AI providers (Replicate, Vertex AI, OpenAI, Fireworks)
-- Simultaneous image generation across providers
-- Model selection and customization
+- Secure Firebase Authentication
+- Email/Password and Anonymous login options
+- User profile management
+- Protected routes and API endpoints
 
-### User Interface
+### AI Integration
 
-- Clean, modern design with shadcn/ui components
-- Responsive layout for all devices
-- Real-time generation progress indicators
+- Powered by Google's Gemini AI
+- Intelligent conversation capabilities
+- Content generation features
+- Real-time response streaming
 
-### Image Generation
+### User Experience
 
-- Text-to-image generation
-- Multiple style options
-- Side-by-side provider comparison
+- Dark/Light theme support
+- Responsive design
+- Real-time chat interface
+- Message history persistence
+- Loading states and error handling
 
 ## 📸 Screenshots & Workflow
 
-### 1. Main Interface
+### 1. Authentication Flow
 
 <div align="center">
-  <img src="screenshots/demo_image_generated.png" alt="Main Interface" width="800"/>
-  <p>The main application interface showing generated penguin images across different AI providers</p>
+  <img src="screenshots/login.png" alt="Login Page" width="800"/>
+  <p>Secure login interface with email/password authentication</p>
+  
+  <img src="screenshots/signup.png" alt="Sign Up Page" width="800"/>
+  <p>User registration with Firebase Authentication</p>
+  
+  <img src="screenshots/firebase_authontication.png" alt="Firebase Auth Dashboard" width="800"/>
+  <p>Firebase Authentication Dashboard showing user management</p>
 </div>
 
-### 2. Model Selection & Generation
-
-#### Replicate Models
+### 2. Chat Interface
 
 <div align="center">
-  <img src="screenshots/replicate_model.png" alt="Replicate Models" width="800"/>
-  <p>Stable Diffusion model options from Replicate</p>
+  <img src="screenshots/chat_without_login.png" alt="Public Chat Interface" width="800"/>
+  <p>Initial chat interface for non-authenticated users</p>
+  
+  <img src="screenshots/dark_chat.png" alt="Dark Mode Chat" width="800"/>
+  <p>Dark mode chat interface showing AI responses</p>
+  
+  <img src="screenshots/dart_chat1.png" alt="Chat Interaction" width="800"/>
+  <p>Interactive chat session with AI responses</p>
 </div>
 
-#### Vertex AI Models
+### 3. Response Generation
 
 <div align="center">
-  <img src="screenshots/vertex_aI_model.png.png" alt="Vertex AI Models" width="800"/>
-  <p>Imagen model from Google Vertex AI</p>
+  <img src="screenshots/response_generating.png" alt="Response Generation" width="800"/>
+  <p>AI processing and generating responses</p>
+  
+  <img src="screenshots/response_generating1.png" alt="Complex Response" width="800"/>
+  <p>Detailed AI-generated content with formatting</p>
+  
+  <img src="screenshots/response_generating2.png" alt="Code Generation" width="800"/>
+  <p>Code generation and technical responses</p>
 </div>
 
-#### OpenAI Models
+### 4. User Features
 
 <div align="center">
-  <img src="screenshots/openAI_model.png" alt="OpenAI Models" width="800"/>
-  <p>DALL-E 3 model from OpenAI</p>
-</div>
-
-#### Fireworks Models
-
-<div align="center">
-  <img src="screenshots/fireworks_models.png" alt="Fireworks Models" width="800"/>
-  <p>Available models from Fireworks including flux-1-schnell-fp8</p>
-</div>
-
-### 3. Generated Results Example
-
-<div align="center">
-  <img src="screenshots/generated_images.png" alt="Generated Images" width="800"/>
-  <p>Example of a cat in ukiyo-e style generated across different providers</p>
-</div>
-
-### 4. Loading States
-
-<div align="center">
-  <img src="screenshots/loading.png" alt="Loading State" width="800"/>
-  <p>Generation progress indicators for each provider</p>
-</div>
-
-### 5. Error Handling
-
-<div align="center">
-  <img src="screenshots/image_generation_error.png" alt="Error Handling" width="800"/>
-  <p>Error feedback when image generation fails</p>
+  <img src="screenshots/image_response.png" alt="Image Analysis" width="800"/>
+  <p>AI-powered image analysis and description</p>
+  
+  <img src="screenshots/image_response1.png" alt="Image Response" width="800"/>
+  <p>Detailed image analysis results</p>
 </div>
 
 ## 🚀 Getting Started
 
 1. Clone the repository:
-
-```bash
-git clone https://github.com/jamalihassan0307/ai-sdk-image-generator.git
-```
+   \`\`\`bash
+   git clone https://github.com/jamalihassan0307/nextjs-ai-chatbot.git
+   \`\`\`
 
 2. Install dependencies:
+   \`\`\`bash
+   npm install
+   \`\`\`
 
-```bash
-npm install
-```
-
-3. Set up environment variables in `.env.local`:
-
-```env
-OPENAI_API_KEY=your_openai_key
-REPLICATE_API_TOKEN=your_replicate_token
-FIREWORKS_API_KEY=your_fireworks_key
-GOOGLE_CLIENT_EMAIL=your_google_email
-GOOGLE_PRIVATE_KEY=your_google_key
-GOOGLE_VERTEX_PROJECT=your_project_id
-GOOGLE_VERTEX_LOCATION=your_location
-```
+3. Set up environment variables in \`.env.local\`:
+   \`\`\`env
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   GEMINI_API_KEY=your_gemini_api_key
+   \`\`\`
 
 4. Run the development server:
-
-```bash
-npm run dev
-```
+   \`\`\`bash
+   npm run dev
+   \`\`\`
 
 ## 👨‍💻 Developer Contact
 
@@ -204,6 +140,7 @@ Feel free to reach out for questions or collaboration:
 
 Special thanks to:
 
-- Vercel team for the AI SDK
-- All AI provider partners (Replicate, OpenAI, Google, Fireworks)
-- The open-source community -->
+- Google Cloud team for Gemini AI
+- Firebase team for Authentication services
+- Vercel for hosting and deployment
+- The open-source community
