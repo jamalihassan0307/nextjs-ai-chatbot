@@ -14,12 +14,18 @@ export const authConfig = {
         nextUrl.pathname.startsWith("/register");
 
       if (isOnAuth) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+        if (isLoggedIn) {
+          const callbackUrl = nextUrl.searchParams.get("callbackUrl");
+          return Response.redirect(new URL(callbackUrl || "/", nextUrl));
+        }
         return true;
       }
 
-      if (!isLoggedIn) {
-        return Response.redirect(new URL("/login", nextUrl));
+      if (!isLoggedIn && !nextUrl.pathname.startsWith("/api")) {
+        const searchParams = new URLSearchParams({
+          callbackUrl: nextUrl.pathname,
+        });
+        return Response.redirect(new URL(`/login?${searchParams}`, nextUrl));
       }
 
       return true;

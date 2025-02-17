@@ -61,13 +61,22 @@ export const register = async (
       password: formData.get("password"),
     });
 
-    try {
-      await registerUser(validatedData.email, validatedData.password);
-      await signIn("credentials", validatedData);
-    } catch (signInError) {
-      console.error("Sign in error:", signInError);
-      throw signInError;
+    // Check if user exists
+    const existingUser = await getUser(validatedData.email);
+    if (existingUser) {
+      return { status: "user_exists" };
     }
+
+    // Create the user
+    await createUser(validatedData.email, validatedData.password);
+
+    // Sign in the user
+    await signIn("credentials", {
+      email: validatedData.email,
+      password: validatedData.password,
+      redirect: true,
+      callbackUrl: "/",
+    });
 
     return { status: "success" };
   } catch (error: any) {
@@ -77,12 +86,10 @@ export const register = async (
       fullError: error,
     });
 
-    if (error.code === "auth/email-already-in-use") {
-      return { status: "user_exists" };
-    }
     if (error instanceof z.ZodError) {
       return { status: "invalid_data" };
     }
+
     return { status: "failed" };
   }
 };
