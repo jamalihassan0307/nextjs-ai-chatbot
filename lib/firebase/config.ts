@@ -6,3 +6,16 @@ export const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
+
+// Add runtime check for required environment variables
+if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+  throw new Error(
+    "NEXT_PUBLIC_FIREBASE_API_KEY is not configured in environment variables"
+  );
+}
+
+if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+  throw new Error(
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID is not configured in environment variables"
+  );
+}
